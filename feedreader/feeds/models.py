@@ -19,7 +19,8 @@ class Feed(models.Model):
 class Author(models.Model):
     """The Author class"""
 
-    name = models.CharField(max_length=200, unique=True, blank=True, default='')
+    name = models.CharField(
+        max_length=200, unique=True, blank=True, default='')
 
     @classmethod
     def create(cls, name):
@@ -38,11 +39,12 @@ class Entry(models.Model):
     url = models.URLField(max_length=200, unique=True)
     authors = models.ManyToManyField(Author)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='entry_images/', null=True)
+    image = models.URLField(max_length=200, null=True)
 
     @classmethod
-    def create(cls, title, published, url, feed):
-        entry = cls(title=title, published=published, url=url, feed=feed)
+    def create(cls, title, published, url, feed, image):
+        entry = cls(
+            title=title, published=published, url=url, feed=feed, image=image)
         return entry
 
     def __str__(self):

@@ -32,6 +32,13 @@ class Command(BaseCommand):
         # Parse entry
         for entry in parsed_feed.entries:
 
+            # Find an image
+            try:
+                soup = BeautifulSoup(entry.summary, 'html.parser')
+                img_link = soup.find('img').get('src')
+            except AttributeError:
+                img_link = None
+
             try:
                 # Entry already present, skip it
                 new_entry = Entry.objects.get(title=entry.title,
@@ -41,23 +48,8 @@ class Command(BaseCommand):
                 # Create a new entry
                 new_entry = Entry.create(title=entry.title,
                     published=datetime.datetime(*entry.published_parsed[:6]),
-                    url=entry.link, feed=new_feed)
+                    url=entry.link, feed=new_feed, image=img_link)
                 new_entry.save()
-
-            # Find an image
-            try:
-                soup = BeautifulSoup(entry.summary, 'html.parser')
-                img_link = soup.find('img').get('src')
-                # If an image exists, save it
-                if img_link:
-                    img_temp = NamedTemporaryFile(delete=True)
-                    img_temp.write(urlopen(img_link).read())
-                    img_temp.flush()
-                    new_entry.image.save('entry_{0}'.format(new_entry.id), ImageFile(img_temp))
-                pass
-            except AttributeError:
-                # No images in summary
-                pass
 
             # Some entries do not contain information about authors
             if entry.has_key('authors'):
