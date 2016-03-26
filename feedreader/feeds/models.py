@@ -15,6 +15,9 @@ class Feed(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ['title']
+
 
 class Author(models.Model):
     """The Author class"""
@@ -49,3 +52,6 @@ class Entry(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ['-published']

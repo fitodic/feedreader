@@ -1,0 +1,40 @@
+{% extends "feeds/base.html" %}
+
+{% block content %}
+<h3>Feed: <a href="{{ feed.url }}">{{ feed.title }}</a></h3>
+{% comment %}
+    List entries for the specified feed
+    {% endcomment %}
+    <ul>
+      {% for entry in page_obj %}
+      <li><a href="{{ entry.url }}">{{ entry.title }}</a></li>
+      {% endfor %}
+  </ul>
+{% comment %}
+  Pagination
+  {% endcomment %}
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock content %}
+
+{% block feeds %}
+    {% comment %}
+      List all available feeds
+    {% endcomment %}
+  {% for feed in list_feeds %}
+  <li><a href="{% url "feeds:feed" feed.id %}">{{ feed.title }}</a></li>
+  {% endfor %}
+{% endblock feeds %}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>{% block title %}FeedReader{% endblock title %}</title>
+  <meta name="generator" content="FeedReader" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="{% static "css/bootstrap-theme.min.css" %}" media="screen" charset="utf-8">
+
+</head>
+<body>
+
+  <header class="navbar navbar-default navbar-static-top" role="banner">
+    <div class="container">
+      <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="{% url "feeds:index" %}" class="navbar-brand">FeedReader</a>
+      </div>
+      <nav class="collapse navbar-collapse" role="navigation">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="#">Add feed</a>
+          </li>
+          <li>
+            <a href="#">Search</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Begin Body -->
+  <div class="container">
+  <div class="row">
+      <div class="col-md-9">
+        {% comment %}
+          A block for adding entries
+        {% endcomment %}
+        {% block content %}
+        <h1>No feeds at the moment.</h1>
+        {% endblock content %}
+      </div>
+      <div class="col-md-3" id="rightCol">
+        <div class="well">
+          <ul class="nav nav-stacked" id="sidebar">
+            {% comment %}
+              A block for adding feeds
+            {% endcomment %}
+            {% block feeds %}
+            <li>No feeds at the moment</li>
+            {% endblock feeds %}
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- script references -->
+  {% load staticfiles %}
+  <script type="text/javascript" src="{% static "js/jquery.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"></script>
+</body>
+</html>

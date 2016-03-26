@@ -1,8 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
 from feeds.models import Feed, Entry, Author
-from django.core.files.images import ImageFile
-from django.core.files.temp import NamedTemporaryFile
-from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import feedparser
 import datetime
