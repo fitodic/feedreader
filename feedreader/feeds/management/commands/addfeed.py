@@ -1,8 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from feeds.models import Feed, Entry, Author
-from bs4 import BeautifulSoup
+from feeds import models
 import feedparser
-import datetime
 
 class Command(BaseCommand):
     """docstring for Command"""
@@ -15,62 +13,22 @@ class Command(BaseCommand):
 
         # Parse feed
         parsed_feed = feedparser.parse(options['feed'])
-        # Create a new Feed object
-        try:
-            new_feed = Feed.objects.get(title=parsed_feed.feed.title)
-        except Feed.DoesNotExist:
-            new_feed = Feed.create(title=parsed_feed.feed.title,
-                                   url=parsed_feed.feed.link)
-            new_feed.save()
+        # Create a Feed object
+        feed = models.Feed.save_feed_data(url=options['feed'])
 
         self.stdout.write(
-            self.style.SUCCESS('Parsing feed: {0}'.format(new_feed.title)))
+            self.style.SUCCESS('Parsing feed: {0}'.format(feed.title)))
 
         # Parse entry
         for entry in parsed_feed.entries:
-
-            # Find an image
-            try:
-                soup = BeautifulSoup(entry.summary, 'html.parser')
-                img_link = soup.find('img').get('src')
-            except AttributeError:
-                img_link = None
-
-            try:
+            # Create an Entry object
+            entry_object = models.Entry.save_entry_data(entry=entry, feed=feed)
+            if not entry_object:
                 # Entry already present, skip it
-                new_entry = Entry.objects.get(title=entry.title,
-                    url=entry.link)
                 continue
-            except Entry.DoesNotExist:
-                # Create a new entry
-                new_entry = Entry.create(title=entry.title,
-                    published=datetime.datetime(*entry.published_parsed[:6]),
-                    url=entry.link, feed=new_feed, image=img_link)
-                new_entry.save()
-
-            # Some entries do not contain information about authors
-            if entry.has_key('authors'):
-                for author in entry.authors:
-                    try:
-                        new_author = Author.objects.get(name=author.name)
-                    except Author.DoesNotExist:
-                        new_author = Author.create(name=author.name)
-                        new_author.save()
-                        self.stdout.write(
-                            self.style.SUCCESS(
-                                'Added author: {0}'.format(new_author.name)))
-
-            else:
-                # When no author is specified
-                try:
-                    new_author = Author.objects.get(name='Unspecified')
-                except Author.DoesNotExist:
-                    new_author = Author.create(name='Unspecified')
-                    new_author.save()
-
-
-            new_entry.authors.add(new_author)
+            # Add authors to entries
+            author_object = models.Author.save_author_data(entry_parsed=entry, entry_object=entry_object)
 
             self.stdout.write(
                 self.style.SUCCESS(
-                    'Added entry: {0}'.format(new_entry.title)))
+                    'Added entry: {0}'.format(entry_object.title)))

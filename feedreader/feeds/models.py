@@ -1,4 +1,9 @@
 from django.db import models
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from bs4 import BeautifulSoup
+import feedparser
+import datetime
 
 
 class Feed(models.Model):
@@ -9,11 +14,35 @@ class Feed(models.Model):
 
     @classmethod
     def create(cls, title, url):
+        """ Create a Feed object. """
         feed = cls(title=title, url=url)
+        return feed
+
+    @classmethod
+    def save_feed_data(cls, url, title=None):
+        """ Parse the feed and save it. """
+        feed_parsed = feedparser.parse(url)
+        if not title:
+            # Used when submitting data through the command line tool
+            try:
+                feed = cls.objects.get(title=feed_parsed.feed.title)
+            except cls.DoesNotExist:
+                feed = cls.create(title=feed_parsed.feed.title,
+                                  url=feed_parsed.href)
+                feed.save()
+        else:
+            # Data verified by the FeedForm
+            feed = cls.create(title=title, url=url)
+            feed.save()
+
         return feed
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return HttpResponseRedirect(
+            reverse('feeds:feed', kwargs={'feed_id': int(self.id)}))
 
     class Meta:
         ordering = ['title']
@@ -27,8 +56,30 @@ class Author(models.Model):
 
     @classmethod
     def create(cls, name):
+        """ Create a Author object. """
         author = cls(name=name)
         return author
+
+    @classmethod
+    def save_author_data(cls, entry_parsed, entry_object):
+        """ Parse the entry and save the authors. """
+        if entry_parsed.has_key('authors'):
+            # One or multiple authors
+            for author in entry_parsed.authors:
+                try:
+                    new_author = cls.objects.get(name=author.name)
+                except cls.DoesNotExist:
+                    new_author = cls.create(name=author.name)
+                    new_author.save()
+                entry_object.authors.add(new_author)
+        else:
+            # When no author is specified
+            try:
+                new_author = cls.objects.get(name='Unspecified')
+            except cls.DoesNotExist:
+                new_author = cls.create(name='Unspecified')
+                new_author.save()
+            entry_object.authors.add(new_author)
 
     def __str__(self):
         return self.name
@@ -46,9 +97,34 @@ class Entry(models.Model):
 
     @classmethod
     def create(cls, title, published, url, feed, image):
+        """ Create a Entry object. """
         entry = cls(
             title=title, published=published, url=url, feed=feed, image=image)
         return entry
+
+    @classmethod
+    def save_entry_data(cls, feed, entry):
+        """ Parse the entry and save it. """
+        # Find an image
+        try:
+            soup = BeautifulSoup(entry.summary, 'html.parser')
+            img_link = soup.find('img').get('src')
+        except AttributeError:
+            # No img tag
+            img_link = None
+
+        try:
+            # Entry already present, skip it
+            new_entry = cls.objects.get(title=entry.title,
+                                        url=entry.link)
+            return
+        except cls.DoesNotExist:
+            # Create a new entry
+            new_entry = cls.create(title=entry.title,
+                published=datetime.datetime(*entry.published_parsed[:6]),
+                url=entry.link, feed=feed, image=img_link)
+            new_entry.save()
+        return new_entry
 
     def __str__(self):
         return self.title
