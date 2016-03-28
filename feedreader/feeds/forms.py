@@ -23,3 +23,34 @@ class FeedForm(forms.ModelForm):
                 self.error_messages['not_RSS'], code='not_RSS')
 
         return cleaned_data
+
+
+class AuthorForm(forms.ModelForm):
+
+    error_messages = {
+        'no_author': _('No author was found under this name.'),
+        'no_name': _('Please type the name of the author'),
+    }
+
+    class Meta:
+        model = models.Author
+        fields = ('name',)
+
+    def clean(self):
+        try:
+            if self.cleaned_data['name'] != '':
+                author = models.Author.objects.filter(
+                    name__contains=self.cleaned_data['name'])
+                if author.count() == 0:
+                    raise models.Author.DoesNotExist
+            else:
+                raise forms.ValidationError(
+                self.error_messages['no_name'], code='no_name')
+        except models.Author.DoesNotExist:
+            raise forms.ValidationError(
+                self.error_messages['no_author'], code='no_author')
+
+        return self.cleaned_data
+
+
+

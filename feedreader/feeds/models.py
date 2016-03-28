@@ -84,6 +84,10 @@ class Author(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return HttpResponseRedirect(
+            reverse('feeds:authorentries', kwargs={'author_id': int(self.id)}))
+
 
 class Entry(models.Model):
     """The Entry class"""

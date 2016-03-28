@@ -1,0 +1,23 @@
+{% extends "feeds/base.html" %}
+{% block content %}
+  <div class="ui-widget">
+    <form action="{% url "feeds:author" %}" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Search" />
+    </form>
+  </div>
+
+{% endblock content %}
+
+{% block js %}
+  <script type="text/javascript">
+    $(function() {
+      $("#id_name").autocomplete({
+        source: "{% url "feeds:authorsearch" %}",
+        minLength: 2,
+        delay: 200,
+      });
+    });
+  </script>
+{% endblock js %}

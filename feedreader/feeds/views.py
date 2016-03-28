@@ -1,6 +1,8 @@
 from django.views import generic
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 import feedparser
+import json
 from . import models
 from . import forms
 
@@ -56,9 +58,54 @@ class AddFeedView(generic.CreateView):
                 # Entry already present, skip it
                 continue
             # Add authors to entries
-            author_object = models.Author.save_author_data(entry_parsed=entry, entry_object=entry_object)
+            author_object = models.Author.save_author_data(
+                entry_parsed=entry, entry_object=entry_object)
 
         return feed.get_absolute_url()
 
+
+class AuthorEntryList(generic.ListView):
+    template_name = 'feeds/author_entry_list.html'
+    context_object_name = 'list_entries'
+    model = models.Entry
+    paginate_by = 20
+
+    def get_queryset(self):
+        self.author = get_object_or_404(models.Author, id=self.kwargs['author_id'])
+        return models.Entry.objects.filter(authors=self.author)
+
+    def get_context_data(self, **kwargs):
+        context = super(AuthorEntryList, self).get_context_data(**kwargs)
+        context['author'] = self.author
+        context['list_feeds'] = models.Feed.objects.all()
+        return context
+
+
+class AuthorView(generic.FormView):
+
+    template_name = 'feeds/author_search.html'
+    form_class = forms.AuthorForm
+    model = models.Author
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        author = models.Author.objects.get(name__contains=data['name'])
+        return author.get_absolute_url()
+
+
+class AuthorSearchView(generic.FormView):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            cleaned_data = []
+            search_term = request.GET['term']
+            query_results = models.Author.objects.filter(name__contains=search_term)
+            for result in query_results:
+                result_json = {}
+                result_json['id'] = result.id
+                result_json['label'] = result.name
+                result_json['value'] = result.name
+                cleaned_data.append(result_json)
+            json_data = json.dumps(cleaned_data)
+            return HttpResponse(json_data, 'application/json')
 
 
