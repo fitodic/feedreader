@@ -9,6 +9,9 @@
   <ul>
     {% for entry in list_entries %}
     <li><a href="{{ entry.url }}">{{ entry.title }}</a></li>
+    {% if entry.image %}
+      {% include "feeds/thumbnails_snippet.html" with entry=entry%}
+    {% endif %}
     {% endfor %}
   </ul>
 </div>

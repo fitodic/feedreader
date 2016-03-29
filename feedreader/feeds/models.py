@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.core.files.temp import NamedTemporaryFile
+from django.core.files.images import ImageFile
+from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import feedparser
 import datetime
@@ -97,23 +100,25 @@ class Entry(models.Model):
     url = models.URLField(max_length=200, unique=True)
     authors = models.ManyToManyField(Author)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
-    image = models.URLField(max_length=200, null=True)
+    image = models.ImageField(upload_to='entry_images/', null=True)
+    image_url = models.URLField(max_length=200, null=True)
 
     @classmethod
-    def create(cls, title, published, url, feed, image):
+    def create(cls, title, published, url, feed, image_url):
         """ Create a Entry object. """
         entry = cls(
-            title=title, published=published, url=url, feed=feed, image=image)
+            title=title, published=published, url=url, feed=feed, image_url=image_url)
         return entry
 
     @classmethod
     def save_entry_data(cls, feed, entry):
         """ Parse the entry and save it. """
-        # Find an image
+
+        # Find an image and save its link
         try:
             soup = BeautifulSoup(entry.summary, 'html.parser')
             img_link = soup.find('img').get('src')
-        except AttributeError:
+        except (AttributeError, URLError):
             # No img tag
             img_link = None
 
@@ -126,8 +131,16 @@ class Entry(models.Model):
             # Create a new entry
             new_entry = cls.create(title=entry.title,
                 published=datetime.datetime(*entry.published_parsed[:6]),
-                url=entry.link, feed=feed, image=img_link)
+                url=entry.link, feed=feed, image_url=img_link)
             new_entry.save()
+
+        # If there is an image, save it
+        if img_link:
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(urlopen(img_link).read())
+            img_temp.flush()
+            new_entry.image.save('entry_{0}'.format(new_entry.id), ImageFile(img_temp))
+
         return new_entry
 
     def __str__(self):

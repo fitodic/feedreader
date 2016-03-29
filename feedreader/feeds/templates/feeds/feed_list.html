@@ -8,6 +8,7 @@
     <ul>
       {% for entry in page_obj %}
       <li><a href="{{ entry.url }}">{{ entry.title }}</a></li>
+      {% include "feeds/thumbnails_snippet.html" with entry=entry%}
       {% endfor %}
   </ul>
 {% comment %}

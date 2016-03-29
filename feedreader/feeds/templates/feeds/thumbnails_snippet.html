@@ -1,0 +1,4 @@
+{% load thumbnail %}
+{% thumbnail entry.image "100x50" crop="center" as im %}
+<img src="{{ im.url }}" >
+{% endthumbnail %}
