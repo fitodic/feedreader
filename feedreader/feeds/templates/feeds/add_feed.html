@@ -2,7 +2,7 @@
 {% block content %}
   <form action="{% url "feeds:addfeed" %}" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% include "feeds/form_snippet.html" %}
     <input type="submit" value="Save" />
   </form>
 {% endblock content %}

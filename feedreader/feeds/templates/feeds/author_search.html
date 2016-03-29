@@ -3,7 +3,7 @@
   <div class="ui-widget">
     <form action="{% url "feeds:author" %}" method="post">
       {% csrf_token %}
-      {{ form.as_p }}
+      {% include "feeds/form_snippet.html" %}
       <input type="submit" value="Search" />
     </form>
   </div>

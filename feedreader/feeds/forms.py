@@ -25,32 +25,47 @@ class FeedForm(forms.ModelForm):
         return cleaned_data
 
 
-class AuthorForm(forms.ModelForm):
+class AuthorForm(forms.Form):
+
+    error_css_class = 'error'
+    required_css_class = 'required'
 
     error_messages = {
         'no_author': _('No author was found under this name.'),
         'no_name': _('Please type the name of the author'),
     }
 
-    class Meta:
-        model = models.Author
-        fields = ('name',)
+    name = forms.CharField(
+        max_length=200, label="Author's name", help_text="Enter the author's name")
 
     def clean(self):
-        try:
-            if self.cleaned_data['name'] != '':
-                author = models.Author.objects.filter(
-                    name__contains=self.cleaned_data['name'])
-                if author.count() == 0:
-                    raise models.Author.DoesNotExist
-            else:
-                raise forms.ValidationError(
+
+        if not self.is_valid():
+            raise forms.ValidationError(
                 self.error_messages['no_name'], code='no_name')
+
+        cleaned_data = super(AuthorForm, self).clean()
+        try:
+            author = models.Author.objects.filter(
+                    name__contains=cleaned_data['name'])
+            if author.count() == 0:
+                raise models.Author.DoesNotExist
         except models.Author.DoesNotExist:
             raise forms.ValidationError(
                 self.error_messages['no_author'], code='no_author')
 
-        return self.cleaned_data
+    # def clean(self):
+    #     try:
+    #         if self.cleaned_data['name'] != '':
+    #             author = models.Author.objects.filter(
+    #                 name__contains=self.cleaned_data['name'])
+    #             if author.count() == 0:
+    #                 raise models.Author.DoesNotExist
+    #         else:
+    #             raise forms.ValidationError(
+    #                 self.error_messages['no_name'], code='no_name')
+    #     except models.Author.DoesNotExist:
+    #         raise forms.ValidationError(
+    #             self.error_messages['no_author'], code='no_author')
 
-
-
+    #     return self.cleaned_data
