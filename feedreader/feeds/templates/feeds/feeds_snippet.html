@@ -1,0 +1,3 @@
+{% for feed in list_feeds %}
+  <li><a href="{% url "feeds:feed" feed.id %}">{{ feed.title }}</a></li>
+{% endfor %}

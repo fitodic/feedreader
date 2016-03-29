@@ -1,4 +1,9 @@
 {% extends "feeds/base.html" %}
+
+{% block title %}
+  FeedReader - Search
+{% endblock title %}
+
 {% block content %}
   <div class="ui-widget">
     <form action="{% url "feeds:author" %}" method="post">
@@ -7,8 +12,11 @@
       <input type="submit" value="Search" />
     </form>
   </div>
-
 {% endblock content %}
+
+{% block sidebar %}
+  {% include "feeds/feeds_snippet.html" with list_feeds=list_feeds %}
+{% endblock sidebar %}
 
 {% block js %}
   <script type="text/javascript">

@@ -5,42 +5,17 @@
   List all entries
 {% endcomment %}
 <div>
-  <h2>Entries</h2>
-  <ul>
-    {% for entry in list_entries %}
-    <li><a href="{{ entry.url }}">{{ entry.title }}</a></li>
-    {% if entry.image %}
-      {% include "feeds/thumbnails_snippet.html" with entry=entry%}
-    {% endif %}
-    {% endfor %}
-  </ul>
+  {% include "feeds/entries_snippet.html" with page_obj=list_entries %}
 </div>
 {% comment %}
   Pagination
 {% endcomment %}
 {% if is_paginated %}
-<div class="pagination">
-  <span class="page-links">
-    {% if page_obj.has_previous %}
-    <a href="/feeds?page={{ page_obj.previous_page_number }}">previous</a>
-    {% endif %}
-    <span class="page-current">
-      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-    </span>
-    {% if page_obj.has_next %}
-    <a href="/feeds?page={{ page_obj.next_page_number }}">next</a>
-    {% endif %}
-  </span>
-</div>
+  {% include "feeds/pagination_snippet.html" with page_obj=page_obj%}
 {% endif %}
 {% endblock content %}
 
 
-{% block feeds %}
-{% comment %}
-  List all available feeds
-{% endcomment %}
-{% for feed in list_feeds %}
-  <li><a href="{% url "feeds:feed" feed.id %}">{{ feed.title }}</a></li>
-{% endfor %}
-{% endblock feeds %}
+{% block sidebar %}
+  {% include "feeds/feeds_snippet.html" with list_feeds=list_feeds %}
+{% endblock sidebar %}

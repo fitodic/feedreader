@@ -3,8 +3,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files.images import ImageFile
-from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import urllib
 import feedparser
 import datetime
 
@@ -118,7 +118,7 @@ class Entry(models.Model):
         try:
             soup = BeautifulSoup(entry.summary, 'html.parser')
             img_link = soup.find('img').get('src')
-        except (AttributeError, URLError):
+        except (urllib.error.URLError, AttributeError):
             # No img tag
             img_link = None
 
@@ -137,7 +137,7 @@ class Entry(models.Model):
         # If there is an image, save it
         if img_link:
             img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(urlopen(img_link).read())
+            img_temp.write(urllib.request.urlopen(img_link).read())
             img_temp.flush()
             new_entry.image.save('entry_{0}'.format(new_entry.id), ImageFile(img_temp))
 

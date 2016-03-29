@@ -63,6 +63,11 @@ class AddFeedView(generic.CreateView):
 
         return feed.get_absolute_url()
 
+    def get_context_data(self, **kwargs):
+        context = super(AddFeedView, self).get_context_data(**kwargs)
+        context['list_feeds'] = models.Feed.objects.all()
+        return context
+
 
 class AuthorEntryList(generic.ListView):
     template_name = 'feeds/author_entry_list.html'
@@ -91,6 +96,11 @@ class AuthorView(generic.FormView):
         data = form.cleaned_data
         author = models.Author.objects.get(name__contains=data['name'])
         return author.get_absolute_url()
+
+    def get_context_data(self, **kwargs):
+        context = super(AuthorView, self).get_context_data(**kwargs)
+        context['list_feeds'] = models.Feed.objects.all()
+        return context
 
 
 class AuthorSearchView(generic.FormView):

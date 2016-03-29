@@ -1,4 +1,9 @@
 {% extends "feeds/base.html" %}
+
+{% block title %}
+  FeedReader - Add
+{% endblock title %}
+
 {% block content %}
   <form action="{% url "feeds:addfeed" %}" method="post">
     {% csrf_token %}
@@ -6,3 +11,7 @@
     <input type="submit" value="Save" />
   </form>
 {% endblock content %}
+
+{% block sidebar %}
+  {% include "feeds/feeds_snippet.html" with list_feeds=list_feeds %}
+{% endblock sidebar %}

@@ -32,7 +32,7 @@
             <a href="{% url "feeds:addfeed" %}">Add feed</a>
           </li>
           <li>
-            <a href="{% url "feeds:author" %}">Search</a>
+            <a href="{% url "feeds:author" %}">Search by author</a>
           </li>
         </ul>
       </nav>
@@ -56,17 +56,15 @@
             {% comment %}
               A block for adding feeds
             {% endcomment %}
-            {% block feeds %}
-            <li>No feeds at the moment</li>
-            {% endblock feeds %}
+            {% block sidebar %}
+              <li><a href="{% url "feeds:addfeed" %}">Add new feeds</a></li>
+            {% endblock sidebar %}
           </ul>
         </div>
 
       </div>
     </div>
   </div>
-
-
 
   <!-- script references -->
   {% load staticfiles %}
