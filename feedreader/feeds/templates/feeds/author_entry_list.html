@@ -5,7 +5,9 @@
 {% endblock title %}
 
 {% block content %}
-<h3>Author: <a href="{% url "feeds:authorentries" author.id %}">{{ author.name }}</a></h3>
+<div class="page-header">
+  <h1>Author <small>{{ author.name }}</small></h1>
+</div>
 {% comment %}
     List entries for the specified feed
     {% endcomment %}

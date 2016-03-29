@@ -5,7 +5,9 @@
 {% endblock title %}
 
 {% block content %}
-<h3>Feed: <a href="{{ feed.url }}">{{ feed.title }}</a></h3>
+<div class="page-header">
+  <h1>Feed <small><a target="_blank" href="{{ feed.url }}">{{ feed.title }}</a></small></h1>
+</div>
 {% comment %}
     List entries for the specified feed
     {% endcomment %}

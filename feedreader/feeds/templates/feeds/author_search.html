@@ -6,10 +6,12 @@
 
 {% block content %}
   <div class="ui-widget">
-    <form action="{% url "feeds:author" %}" method="post">
+    <form action="{% url "feeds:author" %}" method="post" class="form-horizontal">
       {% csrf_token %}
       {% include "feeds/form_snippet.html" %}
-      <input type="submit" value="Search" />
+      <div class="form-group">
+        <input type="submit" class="btn btn-default" value="Search" />
+      </div>
     </form>
   </div>
 {% endblock content %}

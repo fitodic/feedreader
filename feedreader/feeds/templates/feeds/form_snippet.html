@@ -1,22 +1,30 @@
 {% if form.errors %}
-<div class="alert alert-warning">
-  <ul>
+  <div class="alert alert-danger">
     {% for error in form.non_field_errors %}
-    <li>{{ error }}</li>
+      <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> {{ error }}
     {% endfor %}
-  </ul>
-</div>
-{% endif %}
-{% for field in form.visible_fields %}
-<div class="control-group {{ field.html_name }} {% if field.errors %}error{% endif %}">
-  <label class="control-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
-  <div class="controls">
-    {{ field }}
-    {% if field.errors %}<span class="help-inline">{{ field.errors.as_text }}</span>{% endif %}
   </div>
-</div>
+{% endif %}
+
+{% for field in form.visible_fields %}
+  <div class="form-group">
+    {{ field.errors }}
+    <div>
+      {{ field.label_tag }}
+    </div>
+    <div>
+      {{ field }}
+    </div>
+    {% if field.help_text %}
+      <div>
+        <p class="help">{{ field.help_text|safe }}</p>
+      </div>
+    {% endif %}
+  </div>
+
 {% endfor %}
+
 {% for field in form.hidden_fields %}
-{{ field }}
+  {{ field }}
 {% endfor %}
 

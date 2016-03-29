@@ -1,5 +1,6 @@
-{% load thumbnail %}
-{% thumbnail entry.image "100x50" crop="center" as im %}
-<img src="{{ im.url }}" >
-{% empty %}
-{% endthumbnail %}
+<div class="media-left">
+  {% load thumbnail %}
+  {% thumbnail entry.image "100x50" crop="center" as im %}
+    <a href="#"><img src="{{ im.url }}" class="media-object img-rounded" data-holder-rendered="true"></a>
+  {% endthumbnail %}
+</div>

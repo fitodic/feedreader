@@ -16,7 +16,9 @@ class FeedForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(FeedForm, self).clean()
-
+        if not self.is_valid():
+            raise forms.ValidationError(
+                self.error_messages['not_RSS'], code='not_RSS')
         feed = feedparser.parse(cleaned_data['url'])
         if 'rss' not in feed.version.lower():
             raise forms.ValidationError(
@@ -53,19 +55,3 @@ class AuthorForm(forms.Form):
         except models.Author.DoesNotExist:
             raise forms.ValidationError(
                 self.error_messages['no_author'], code='no_author')
-
-    # def clean(self):
-    #     try:
-    #         if self.cleaned_data['name'] != '':
-    #             author = models.Author.objects.filter(
-    #                 name__contains=self.cleaned_data['name'])
-    #             if author.count() == 0:
-    #                 raise models.Author.DoesNotExist
-    #         else:
-    #             raise forms.ValidationError(
-    #                 self.error_messages['no_name'], code='no_name')
-    #     except models.Author.DoesNotExist:
-    #         raise forms.ValidationError(
-    #             self.error_messages['no_author'], code='no_author')
-
-    #     return self.cleaned_data

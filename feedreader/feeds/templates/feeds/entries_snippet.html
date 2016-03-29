@@ -1,6 +1,13 @@
 <ul>
   {% for entry in page_obj %}
-    <li><a href="{{ entry.url }}">{{ entry.title }}</a></li>
-    {% include "feeds/thumbnails_snippet.html" with entry=entry%}
+  <div class="media well well-sm">
+    {% if entry.image %}
+      {% include "feeds/thumbnails_snippet.html" with entry=entry%}
+    {% endif %}
+    <div class="media-body">
+      <h4 class="media-heading"><a target="_blank" href="{{ entry.url }}">{{ entry.title }}</a></h4>
+      <p class="text-muted">{{ entry.published }}</p>
+    </div>
+  </div>
   {% endfor %}
 </ul>
