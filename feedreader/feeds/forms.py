@@ -14,6 +14,15 @@ class FeedForm(forms.ModelForm):
         model = models.Feed
         fields = ('title', 'url')
 
+        labels = {
+            'url': _('URL'),
+        }
+
+        help_texts = {
+            'title': 'Enter a unique title for the RSS feed',
+            'url': 'Enter a unique URL for the RSS feed'
+        }
+
     def clean(self):
         cleaned_data = super(FeedForm, self).clean()
         if not self.is_valid():
@@ -29,16 +38,13 @@ class FeedForm(forms.ModelForm):
 
 class AuthorForm(forms.Form):
 
-    error_css_class = 'error'
-    required_css_class = 'required'
-
     error_messages = {
         'no_author': _('No author was found under this name.'),
         'no_name': _('Please type the name of the author'),
     }
 
     name = forms.CharField(
-        max_length=200, label="Author's name", help_text="Enter the author's name")
+        max_length=200, label="Author's name", help_text="Enter the author's name", strip=True)
 
     def clean(self):
 
@@ -49,7 +55,7 @@ class AuthorForm(forms.Form):
         cleaned_data = super(AuthorForm, self).clean()
         try:
             author = models.Author.objects.filter(
-                    name__contains=cleaned_data['name'])
+                name__contains=cleaned_data['name'])
             if author.count() == 0:
                 raise models.Author.DoesNotExist
         except models.Author.DoesNotExist:

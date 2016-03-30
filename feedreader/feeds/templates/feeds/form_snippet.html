@@ -8,7 +8,13 @@
 
 {% for field in form.visible_fields %}
   <div class="form-group">
-    {{ field.errors }}
+    {% if field.errors %}
+      <div class="alert alert-warning">
+      {% for error in form.non_field_errors %}
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> {{ error }}
+      {% endfor %}
+      </div>
+    {% endif %}
     <div>
       {{ field.label_tag }}
     </div>
@@ -16,9 +22,7 @@
       {{ field }}
     </div>
     {% if field.help_text %}
-      <div>
-        <p class="help">{{ field.help_text|safe }}</p>
-      </div>
+      <span id="helpBlock" class="help help-block">{{ field.help_text|safe }}</span>
     {% endif %}
   </div>
 
@@ -27,4 +31,3 @@
 {% for field in form.hidden_fields %}
   {{ field }}
 {% endfor %}
-
