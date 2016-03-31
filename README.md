@@ -20,6 +20,10 @@ Navigate to the directory that contains the *manage.py* file and run:
 $ python manage.py runserver
 ```
 Open a Web browser and visit the [site](http://localhost:8000/feeds/).
+New  feeds can be added using the [UI](http://localhost:8000/feeds/addfeed/) or the command line:
+```bash
+$ python manage.py addfeed http://feeds.gawker.com/lifehacker/full
+```
 
 ### Tests:
 To test the provided functionality, run:
