@@ -28,7 +28,7 @@ class Feed(models.Model):
         if not title:
             # Used when submitting data through the command line tool
             try:
-                feed = cls.objects.get(title=feed_parsed.feed.title)
+                feed = cls.objects.get(url=url)
             except cls.DoesNotExist:
                 feed = cls.create(title=feed_parsed.feed.title,
                                   url=feed_parsed.href)
@@ -55,7 +55,7 @@ class Author(models.Model):
     """The Author class"""
 
     name = models.CharField(
-        max_length=200, unique=True, blank=True, default='')
+        max_length=200, unique=True, null=True)
 
     @classmethod
     def create(cls, name):
@@ -75,14 +75,7 @@ class Author(models.Model):
                     new_author = cls.create(name=author.name)
                     new_author.save()
                 entry_object.authors.add(new_author)
-        else:
-            # When no author is specified
-            try:
-                new_author = cls.objects.get(name='Unspecified')
-            except cls.DoesNotExist:
-                new_author = cls.create(name='Unspecified')
-                new_author.save()
-            entry_object.authors.add(new_author)
+
 
     def __str__(self):
         return self.name

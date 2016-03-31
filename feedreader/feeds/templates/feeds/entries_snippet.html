@@ -6,7 +6,18 @@
     {% endif %}
     <div class="media-body">
       <h4 class="media-heading"><a target="_blank" href="{{ entry.url }}">{{ entry.title }}</a></h4>
-      <p class="text-muted">{{ entry.published }}</p>
+      <p class="text-muted">
+        {% if entry.authors.all %}
+          {% for author in entry.authors.all %}
+            {% if entry.authors.all|length == 1 %}
+               Written by: {{ author.name }}
+            {% else %}
+               Written by: {{ author.name }},
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </p>
+      <p class="text-muted">Published on: {{ entry.published }}</p>
     </div>
   </div>
   {% endfor %}

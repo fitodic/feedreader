@@ -4,13 +4,14 @@ from . import models
 import feedparser
 
 
-def create_test_data():
+def create_test_data(limit=None):
     """ Test the migration process on lifehacker.com RSS feed. """
     # Test URL
     test_url = 'http://feeds.gawker.com/lifehacker/full'
 
     parsed_feed = feedparser.parse(test_url)
     feed = models.Feed.save_feed_data(url=test_url)
+    step = 0
 
     for entry in parsed_feed.entries:
         # Create an Entry object
@@ -21,6 +22,11 @@ def create_test_data():
         # Add authors to entries
         author_object = models.Author.save_author_data(
             entry_parsed=entry, entry_object=entry_object)
+
+        if limit and step < limit:
+            step += 1
+        elif limit:
+            break
 
 
 class FeedsMigrationTests(TestCase):
@@ -34,7 +40,7 @@ class FeedsMigrationTests(TestCase):
         The logic is in: feeds/models.py
         WARNING: This test could take about 15 seconds to complete.
         """
-        create_test_data()
+        create_test_data(10)
 
 
 class FeedsViewTests(TestCase):
@@ -62,30 +68,37 @@ class FeedsViewTests(TestCase):
 
     def test_index_view(self):
         """ The feed and the latest post should be displayed. """
-        create_test_data()
+        create_test_data(5)
+        feed = models.Feed.objects.first()
+        entries = models.Entry.objects.filter(feed=feed)
         response = self.client.get(reverse('feeds:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, models.Feed.objects.first().title)
-        self.assertContains(
-            response, models.Feed.objects.first().entry_set.first().title)
+        self.assertContains(response, feed.title)
+        for entry in entries:
+            if "'" not in entry.title:
+                self.assertContains(response, entry.title)
 
     def test_feed_view(self):
         """ A specific feed and its latest post should be displayed. """
-        create_test_data()
+        create_test_data(5)
         feed = models.Feed.objects.first()
-        entry = feed.entry_set.first()
+        entries = models.Entry.objects.filter(feed=feed)
         response = self.client.get(reverse('feeds:feed', args=(feed.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, feed.title)
-        self.assertContains(response, entry.title)
+        for entry in entries:
+            if "'" not in entry.title:
+                self.assertContains(response, entry.title)
 
     def test_author_view(self):
         """ A specific author and its latest post should be displayed. """
-        create_test_data()
+        create_test_data(5)
         author = models.Author.objects.first()
-        entry = author.entry_set.first()
+        entries = models.Entry.objects.filter(authors=author)
         response = self.client.get(
             reverse('feeds:authorentries', args=(author.id,)))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, author.name)
-        self.assertContains(response, entry.title)
+        for entry in entries:
+            if "'" not in entry.title:
+                self.assertContains(response, entry.title)

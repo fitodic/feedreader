@@ -47,7 +47,6 @@
           A block for adding entries
         {% endcomment %}
         {% block content %}
-        <h1>No feeds at the moment.</h1>
         {% endblock content %}
       </div>
       <div class="col-md-3" id="rightCol">
@@ -57,7 +56,6 @@
               A block for adding feeds
             {% endcomment %}
             {% block sidebar %}
-              <li><a href="{% url "feeds:addfeed" %}">Add new feeds</a></li>
             {% endblock sidebar %}
           </ul>
         </div>
