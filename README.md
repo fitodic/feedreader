@@ -28,10 +28,10 @@ $ python manage.py test feeds
 ```
 Tests are run using the [Lifehacker RSS feed](http://feeds.gawker.com/lifehacker/full) as a reference.
 The application was tested using the following RSS feeds:
-1. [Lifehacker](http://feeds.gawker.com/lifehacker/full) 1
-2. [Ubuntu](https://insights.ubuntu.com/feed/) 2
-3. [Fedora](https://fedoramagazine.org/feed/) 3
-4. [Python](https://www.python.org/dev/peps/peps.rss/) 4
+1. [Lifehacker](http://feeds.gawker.com/lifehacker/full)
+2. [Ubuntu](https://insights.ubuntu.com/feed/)
+3. [Fedora](https://fedoramagazine.org/feed/)
+4. [Python](https://www.python.org/dev/peps/peps.rss/)
 
 ### Requirements:
 All the requirements are listed in the *requirements.py* file. This project was developed using **Python 3**.
