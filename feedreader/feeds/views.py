@@ -8,6 +8,8 @@ from . import forms
 
 
 class IndexView(generic.ListView):
+    """ The IndexView class.
+        Displays lists of feeds and entries. """
 
     template_name = 'feeds/index.html'
     context_object_name = 'list_entries'
@@ -21,6 +23,8 @@ class IndexView(generic.ListView):
 
 
 class FeedEntryList(generic.ListView):
+    """ The FeedEntryList class.
+        Displays a list of entries for a particular feed. """
 
     template_name = 'feeds/feed_list.html'
     context_object_name = 'list_entries'
@@ -39,6 +43,8 @@ class FeedEntryList(generic.ListView):
 
 
 class AddFeedView(generic.CreateView):
+    """ The AddFeedView class.
+        Used for adding new feeds. """
 
     template_name = 'feeds/add_feed.html'
     form_class = forms.FeedForm
@@ -70,13 +76,17 @@ class AddFeedView(generic.CreateView):
 
 
 class AuthorEntryList(generic.ListView):
+    """ The AuthorEntryList class.
+        Displays a list of entries of a particular author. """
+
     template_name = 'feeds/author_entry_list.html'
     context_object_name = 'list_entries'
     model = models.Entry
     paginate_by = 20
 
     def get_queryset(self):
-        self.author = get_object_or_404(models.Author, id=self.kwargs['author_id'])
+        self.author = get_object_or_404(
+            models.Author, id=self.kwargs['author_id'])
         return models.Entry.objects.filter(authors=self.author)
 
     def get_context_data(self, **kwargs):
@@ -87,6 +97,9 @@ class AuthorEntryList(generic.ListView):
 
 
 class AuthorView(generic.FormView):
+    """ The AuthorView class.
+        Used for rendering the author search form and redirecting to the
+        AuthorEntryList upon a successful search. """
 
     template_name = 'feeds/author_search.html'
     form_class = forms.AuthorForm
@@ -104,11 +117,16 @@ class AuthorView(generic.FormView):
 
 
 class AuthorSearchView(generic.FormView):
+    """ The AuthorSearchView class.
+        Used for sending a list of possible authors as JSON after receiving at
+        least two letters. """
+
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             cleaned_data = []
             search_term = request.GET['term']
-            query_results = models.Author.objects.filter(name__contains=search_term)
+            query_results = models.Author.objects.filter(
+                name__contains=search_term)
             for result in query_results:
                 result_json = {}
                 result_json['id'] = result.id
@@ -117,5 +135,3 @@ class AuthorSearchView(generic.FormView):
                 cleaned_data.append(result_json)
             json_data = json.dumps(cleaned_data)
             return HttpResponse(json_data, 'application/json')
-
-

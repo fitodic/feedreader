@@ -24,6 +24,8 @@ class FeedForm(forms.ModelForm):
         }
 
     def clean(self):
+        """ An overriden clean method that tests the validity of the
+            provided URL. """
         cleaned_data = super(FeedForm, self).clean()
         if not self.is_valid():
             raise forms.ValidationError(
@@ -44,10 +46,11 @@ class AuthorForm(forms.Form):
     }
 
     name = forms.CharField(
-        max_length=200, label="Author's name", help_text="Enter the author's name", strip=True)
+        max_length=200, label="Author's name",
+        help_text="Enter the author's name", strip=True)
 
     def clean(self):
-
+        """ An overriden clean method that test the existence of an author. """
         if not self.is_valid():
             raise forms.ValidationError(
                 self.error_messages['no_name'], code='no_name')

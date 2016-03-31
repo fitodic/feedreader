@@ -1,3 +1,4 @@
+beautifulsoup4==4.4.1
 decorator==4.0.9
 Django==1.9.4
 feedparser==5.2.1
@@ -7,6 +8,8 @@ ipython-genutils==0.1.0
 path.py==8.1.2
 pexpect==4.0.1
 pickleshare==0.6
+Pillow==3.1.1
 ptyprocess==0.5.1
 simplegeneric==0.8.1
+sorl-thumbnail==12.3
 traitlets==4.2.1

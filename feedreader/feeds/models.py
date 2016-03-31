@@ -100,7 +100,8 @@ class Entry(models.Model):
     def create(cls, title, published, url, feed, image_url):
         """ Create a Entry object. """
         entry = cls(
-            title=title, published=published, url=url, feed=feed, image_url=image_url)
+            title=title, published=published, url=url, feed=feed,
+            image_url=image_url)
         return entry
 
     @classmethod
@@ -132,7 +133,8 @@ class Entry(models.Model):
             img_temp = NamedTemporaryFile(delete=True)
             img_temp.write(urllib.request.urlopen(img_link).read())
             img_temp.flush()
-            new_entry.image.save('entry_{0}'.format(new_entry.id), ImageFile(img_temp))
+            new_entry.image.save('entry_{0}'.format(new_entry.id),
+                                 ImageFile(img_temp))
 
         return new_entry
 
